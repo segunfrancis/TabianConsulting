@@ -35,6 +35,7 @@ public class SignedInActivity extends AppCompatActivity {
     //vars
     public static boolean isActivityRunning;
     private Boolean mIsAdmin = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,30 +48,31 @@ public class SignedInActivity extends AppCompatActivity {
         initImageLoader();
         getPendingIntent();
     }
-    private void initFCM(){
+
+    private void initFCM() {
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "initFCM: token: " + token);
         sendRegistrationToServer(token);
 
     }
 
-    private void getPendingIntent(){
+    private void getPendingIntent() {
         Log.d(TAG, "getPendingIntent: checking for pending intents.");
 
         Intent intent = getIntent();
-        if(intent.hasExtra(getString(R.string.intent_chatroom))){
+        if (intent.hasExtra(getString(R.string.intent_chatroom))) {
             Log.d(TAG, "getPendingIntent: pending intent detected.");
 
             //get the chatroom
-            Chatroom chatroom = intent.getParcelableExtra(getString(R.string.intent_chatroom));
-            //navigate to the chatoom
-            Intent chatroomIntent = new Intent(SignedInActivity.this, ChatroomActivity.class);
-            chatroomIntent.putExtra(getString(R.string.intent_chatroom), chatroom);
-            startActivity(chatroomIntent);
+//            Chatroom chatroom = intent.getParcelableExtra(getString(R.string.intent_chatroom));
+//            //navigate to the chatoom
+//            Intent chatroomIntent = new Intent(SignedInActivity.this, ChatroomActivity.class);
+//            chatroomIntent.putExtra(getString(R.string.intent_chatroom), chatroom);
+//            startActivity(chatroomIntent);
         }
     }
 
-    private void isAdmin(){
+    private void isAdmin() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         Query query = reference.child(getString(R.string.dbnode_users))
                 .orderByChild(getString(R.string.field_user_id))
@@ -80,11 +82,11 @@ public class SignedInActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange: datasnapshot: " + dataSnapshot);
                 DataSnapshot singleSnapshot = dataSnapshot.getChildren().iterator().next();
-                int securityLevel = Integer.parseInt(singleSnapshot.getValue(User.class).getSecurity_level());
-                if( securityLevel == 10){
-                    Log.d(TAG, "onDataChange: user is an admin.");
-                    mIsAdmin = true;
-                }
+//                int securityLevel = Integer.parseInt(singleSnapshot.getValue(User.class).getSecurity_level());
+//                if( securityLevel == 10){
+//                    Log.d(TAG, "onDataChange: user is an admin.");
+//                    mIsAdmin = true;
+//                }
             }
 
             @Override
@@ -96,7 +98,7 @@ public class SignedInActivity extends AppCompatActivity {
 
     /**
      * Persist token to third-party servers.
-     *
+     * <p>
      * Modify this method to associate the user's FCM InstanceID token with any server-side account
      * maintained by your application.
      *
@@ -111,35 +113,28 @@ public class SignedInActivity extends AppCompatActivity {
                 .setValue(token);
     }
 
-
-
     @Override
     protected void onResume() {
         super.onResume();
         checkAuthenticationState();
     }
 
-
-
-
-    private void checkAuthenticationState(){
+    private void checkAuthenticationState() {
         Log.d(TAG, "checkAuthenticationState: checking authentication state.");
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(user == null){
+        if (user == null) {
             Log.d(TAG, "checkAuthenticationState: user is null, navigating back to login screen.");
 
             Intent intent = new Intent(SignedInActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
-        }else{
+        } else {
             Log.d(TAG, "checkAuthenticationState: user is authenticated.");
         }
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -151,41 +146,40 @@ public class SignedInActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.optionSignOut:
                 signOut();
                 return true;
             case R.id.optionAccountSettings:
-                intent = new Intent(SignedInActivity.this, SettingsActivity.class);
-                startActivity(intent);
+//                intent = new Intent(SignedInActivity.this, SettingsActivity.class);
+//                startActivity(intent);
                 return true;
             case R.id.optionChat:
-                intent = new Intent(SignedInActivity.this, ChatActivity.class);
-                startActivity(intent);
+//                intent = new Intent(SignedInActivity.this, ChatActivity.class);
+//                startActivity(intent);
                 return true;
             case R.id.optionAdmin:
-                if(mIsAdmin){
-                    intent = new Intent(SignedInActivity.this, AdminActivity.class);
-                    startActivity(intent);
-                }else{
+                if (mIsAdmin) {
+//                    intent = new Intent(SignedInActivity.this, AdminActivity.class);
+//                    startActivity(intent);
+                } else {
                     Toast.makeText(this, "You're not an Admin", Toast.LENGTH_SHORT).show();
                 }
                 return true;
 
             case R.id.optionIssues:
-                intent = new Intent(SignedInActivity.this, IssuesActivity.class);
-                startActivity(intent);
+//                intent = new Intent(SignedInActivity.this, IssuesActivity.class);
+//                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-
     /**
      * init universal image loader
      */
-    private void initImageLoader(){
+    private void initImageLoader() {
         UniversalImageLoader imageLoader = new UniversalImageLoader(SignedInActivity.this);
         ImageLoader.getInstance().init(imageLoader.getConfig());
     }
@@ -193,7 +187,7 @@ public class SignedInActivity extends AppCompatActivity {
     /**
      * Sign out the current user
      */
-    private void signOut(){
+    private void signOut() {
         Log.d(TAG, "signOut: signing out");
         FirebaseAuth.getInstance().signOut();
     }
@@ -201,7 +195,7 @@ public class SignedInActivity extends AppCompatActivity {
     /*
             ----------------------------- Firebase setup ---------------------------------
          */
-    private void setupFirebaseAuth(){
+    private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: started.");
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -239,5 +233,4 @@ public class SignedInActivity extends AppCompatActivity {
         }
         isActivityRunning = false;
     }
-
 }
