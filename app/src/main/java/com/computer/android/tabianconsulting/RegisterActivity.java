@@ -38,11 +38,11 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        mEmail = (EditText) findViewById(R.id.input_email);
-        mPassword = (EditText) findViewById(R.id.input_password);
-        mConfirmPassword = (EditText) findViewById(R.id.input_confirm_password);
-        mRegister = (Button) findViewById(R.id.btn_register);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mEmail = findViewById(R.id.input_email);
+        mPassword = findViewById(R.id.input_password);
+        mConfirmPassword = findViewById(R.id.input_confirm_password);
+        mRegister = findViewById(R.id.btn_register);
+        mProgressBar = findViewById(R.id.progressBar);
 
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override

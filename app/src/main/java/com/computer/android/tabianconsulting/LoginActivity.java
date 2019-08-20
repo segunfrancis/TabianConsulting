@@ -44,9 +44,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mEmail = (EditText) findViewById(R.id.email);
-        mPassword = (EditText) findViewById(R.id.password);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mEmail = findViewById(R.id.email);
+        mPassword = findViewById(R.id.password);
+        mProgressBar = findViewById(R.id.progressBar);
 
         setupFirebaseAuth();
         initImageLoader();
@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void init() {
-        Button signIn = (Button) findViewById(R.id.email_sign_in_button);
+        Button signIn = findViewById(R.id.email_sign_in_button);
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,9 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
-
                                     hideDialog();
-
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -213,7 +211,6 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Email is not Verified\nCheck your Inbox", Toast.LENGTH_SHORT).show();
                         FirebaseAuth.getInstance().signOut();
                     }
-
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");

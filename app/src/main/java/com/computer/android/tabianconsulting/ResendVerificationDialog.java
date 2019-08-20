@@ -36,22 +36,29 @@ class ResendVerificationDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_resend_verification, container, false);
-        mConfirmPassword = (EditText) view.findViewById(R.id.confirm_password);
-        mConfirmEmail = (EditText) view.findViewById(R.id.confirm_email);
+        mConfirmPassword = view.findViewById(R.id.confirm_password);
+        mConfirmEmail = view.findViewById(R.id.confirm_email);
         mContext = getActivity();
 
-        TextView confirmDialog = (TextView) view.findViewById(R.id.dialogConfirm);
+        TextView confirmDialog = view.findViewById(R.id.dialogConfirm);
         confirmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: attempting to resend verification email.");
-
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (!isEmpty(mConfirmEmail.getText().toString())
                         && !isEmpty(mConfirmPassword.getText().toString())) {
-
-                    //temporarily authenticate and resend verification email
-                    authenticateAndResendEmail(mConfirmEmail.getText().toString(),
-                            mConfirmPassword.getText().toString());
+                    if (user == null) {
+                        Toast.makeText(mContext, "Register your account", Toast.LENGTH_SHORT).show();
+                        getDialog().dismiss();
+                    } else if (user != null && !user.isEmailVerified()) {
+                        //temporarily authenticate and resend verification email
+                        authenticateAndResendEmail(mConfirmEmail.getText().toString(),
+                                mConfirmPassword.getText().toString());
+                    } else {
+                        Toast.makeText(mContext, "You are already verified", Toast.LENGTH_SHORT).show();
+                        getDialog().dismiss();
+                    }
                 } else {
                     Toast.makeText(mContext, "all fields must be filled out", Toast.LENGTH_SHORT).show();
                 }
@@ -59,7 +66,7 @@ class ResendVerificationDialog extends DialogFragment {
         });
 
         // Cancel button for closing the dialog
-        TextView cancelDialog = (TextView) view.findViewById(R.id.dialogCancel);
+        TextView cancelDialog = view.findViewById(R.id.dialogCancel);
         cancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
