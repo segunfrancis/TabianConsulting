@@ -50,7 +50,6 @@
                 android:textSize="15sp" />
         </RelativeLayout>
 
-
         <!-- Scheduling -->
         <RelativeLayout
             android:id="@+id/relLayout2"
