@@ -4,12 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +47,8 @@ public class SignedInActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: started.");
 
         setupFirebaseAuth();
+        //getUserDetails();
+        setUserDetails();
         isAdmin();
         initFCM();
         initImageLoader();
@@ -53,7 +59,6 @@ public class SignedInActivity extends AppCompatActivity {
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "initFCM: token: " + token);
         sendRegistrationToServer(token);
-
     }
 
     private void getPendingIntent() {
@@ -119,6 +124,44 @@ public class SignedInActivity extends AppCompatActivity {
         checkAuthenticationState();
     }
 
+    private void getUserDetails() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            String uId = user.getUid();
+            String name = user.getDisplayName();
+            String email = user.getEmail();
+            Uri photoUrl = user.getPhotoUrl();
+
+            String properties = "uid: " + uId + "\n" +
+                    "name: " + name + "\n" +
+                    "email: " + email + "\n" +
+                    "photoUrl: " + photoUrl;
+
+            Log.d(TAG, "getUserDetails: " + properties);
+        }
+    }
+
+    private void setUserDetails() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setDisplayName("ShockWave Francis")
+                    .setPhotoUri(Uri.parse("https://images.unsplash.com/photo-1566276956770-4b3f27c4591a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80"))
+                    .build();
+            user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: User profile updated.");
+                        getUserDetails();
+                    }
+                }
+            });
+        }
+    }
+
     private void checkAuthenticationState() {
         Log.d(TAG, "checkAuthenticationState: checking authentication state.");
 
@@ -151,8 +194,8 @@ public class SignedInActivity extends AppCompatActivity {
                 signOut();
                 return true;
             case R.id.optionAccountSettings:
-//                intent = new Intent(SignedInActivity.this, SettingsActivity.class);
-//                startActivity(intent);
+                intent = new Intent(SignedInActivity.this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.optionChat:
 //                intent = new Intent(SignedInActivity.this, ChatActivity.class);
