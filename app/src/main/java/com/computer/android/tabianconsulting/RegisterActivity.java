@@ -13,12 +13,14 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.computer.android.tabianconsulting.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -103,7 +105,7 @@ public class RegisterActivity extends AppCompatActivity {
                             sendVerificationEmail();
 
                             //insert some default data
-                            /*User user = new User();
+                            User user = new User();
                             user.setName(email.substring(0, email.indexOf("@")));
                             user.setPhone("1");
                             user.setProfile_image("");
@@ -130,15 +132,13 @@ public class RegisterActivity extends AppCompatActivity {
                                     //redirect the user to the login screen
                                     redirectLoginScreen();
                                 }
-                            });*/
-
+                            });
                         }
                         if (!task.isSuccessful()) {
                             Toast.makeText(RegisterActivity.this, "Unable to Register",
                                     Toast.LENGTH_SHORT).show();
                         }
                         hideDialog();
-
                         // ...
                     }
                 });

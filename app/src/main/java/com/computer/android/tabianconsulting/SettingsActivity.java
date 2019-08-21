@@ -54,7 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = "SettingsActivity";
 
-    private static final String DOMAIN_NAME = "tabian.ca";
+    private static final String DOMAIN_NAME = "gmail.com";
     private static final int REQUEST_CODE = 1234;
     private static final double MB_THRESHHOLD = 5.0;
     private static final double MB = 1000000.0;
@@ -124,8 +124,8 @@ public class SettingsActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(SettingsActivity.this, "Email and Current Password Fields Must be Filled to Save", Toast.LENGTH_SHORT).show();
                     }
-                }
 
+                }
 
                 /*
                 ------ METHOD 1 for changing database data (proper way in this scenario) -----
@@ -404,7 +404,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-
         /*
             ---------- QUERY Method 2 ----------
          */
@@ -626,7 +625,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
-     * Returns True if the user's email contains '@tabian.ca'
+     * Returns True if the user's email contains '@gmail.com'
      *
      * @param email
      * @return
@@ -653,12 +652,6 @@ public class SettingsActivity extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
-    /**
-     * Return true if the @param is null
-     *
-     * @param string
-     * @return
-     */
     private boolean isEmpty(String string) {
         return string.equals("");
     }
