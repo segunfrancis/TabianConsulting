@@ -23,7 +23,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-class ResendVerificationDialog extends DialogFragment {
+public class ResendVerificationDialog extends DialogFragment {
     private static final String TAG = "ResendVerificationDialo";
 
     //widgets

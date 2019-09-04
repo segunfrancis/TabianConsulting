@@ -18,7 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
-class PasswordResetDialog extends DialogFragment {
+public class PasswordResetDialog extends DialogFragment {
     private static final String TAG = "PasswordResetDialog";
 
     //widgets

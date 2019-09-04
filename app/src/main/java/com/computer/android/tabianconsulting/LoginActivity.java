@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                             }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Authentication Failed\n" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             hideDialog();
                         }
                     });
@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        TextView register = (TextView) findViewById(R.id.link_register);
+        TextView register = findViewById(R.id.link_register);
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        TextView resetPassword = (TextView) findViewById(R.id.forgot_password);
+        TextView resetPassword = findViewById(R.id.forgot_password);
         resetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        TextView resendEmailVerification = (TextView) findViewById(R.id.resend_verification_email);
+        TextView resendEmailVerification = findViewById(R.id.resend_verification_email);
         resendEmailVerification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,16 +148,9 @@ public class LoginActivity extends AppCompatActivity {
         ImageLoader.getInstance().init(imageLoader.getConfig());
     }
 
-    /**
-     * Return true if the @param is null
-     *
-     * @param string
-     * @return
-     */
     private boolean isEmpty(String string) {
         return string.equals("");
     }
-
 
     private void showDialog() {
         mProgressBar.setVisibility(View.VISIBLE);

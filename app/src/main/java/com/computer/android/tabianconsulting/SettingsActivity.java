@@ -22,6 +22,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.computer.android.tabianconsulting.models.User;
+import com.computer.android.tabianconsulting.utility.FilePaths;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -50,7 +52,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements ChangePhotoDialog.OnPhotoReceivedListener {
 
     private static final String TAG = "SettingsActivity";
 
@@ -124,7 +126,6 @@ public class SettingsActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(SettingsActivity.this, "Email and Current Password Fields Must be Filled to Save", Toast.LENGTH_SHORT).show();
                     }
-
                 }
 
                 /*
@@ -140,7 +141,6 @@ public class SettingsActivity extends AppCompatActivity {
                             .child(getString(R.string.field_name))
                             .setValue(mName.getText().toString());
                 }
-
 
                 /*
                 ------ Change Phone Number -----
@@ -160,7 +160,6 @@ public class SettingsActivity extends AppCompatActivity {
                 } else if (mSelectedImageBitmap != null) {
                     uploadNewPhoto(mSelectedImageBitmap);
                 }
-
                 Toast.makeText(SettingsActivity.this, "saved", Toast.LENGTH_SHORT).show();
             }
         });
@@ -182,12 +181,11 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mStoragePermissions) {
-//                    ChangePhotoDialog dialog = new ChangePhotoDialog();
-//                    dialog.show(getSupportFragmentManager(), getString(R.string.dialog_change_photo));
+                    ChangePhotoDialog dialog = new ChangePhotoDialog();
+                    dialog.show(getSupportFragmentManager(), getString(R.string.dialog_change_photo));
                 } else {
                     verifyStoragePermissions();
                 }
-
             }
         });
     }
@@ -226,6 +224,16 @@ public class SettingsActivity extends AppCompatActivity {
         BackgroundImageResize resize = new BackgroundImageResize(imageBitmap);
         Uri uri = null;
         resize.execute(uri);
+    }
+
+    @Override
+    public void getImagePath(Uri imagePath) {
+
+    }
+
+    @Override
+    public void getImageBitmap(Bitmap bitmap) {
+
     }
 
     /**
@@ -302,75 +310,75 @@ public class SettingsActivity extends AppCompatActivity {
         return stream.toByteArray();
     }
 
-//    private void executeUploadTask(){
-//        showDialog();
-//        FilePaths filePaths = new FilePaths();
-//        //specify where the photo will be stored
-//        final StorageReference storageReference = FirebaseStorage.getInstance().getReference()
-//                .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + FirebaseAuth.getInstance().getCurrentUser().getUid()
-//                        + "/profile_image"); //just replace the old image with the new one
-//
-//        if(mBytes.length/MB < MB_THRESHHOLD) {
-//
-//            // Create file metadata including the content type
-//            StorageMetadata metadata = new StorageMetadata.Builder()
-//                    .setContentType("image/jpg")
-//                    .setContentLanguage("en") //see nodes below
-//                    /*
-//                    Make sure to use proper language code ("English" will cause a crash)
-//                    I actually submitted this as a bug to the Firebase github page so it might be
-//                    fixed by the time you watch this video. You can check it out at https://github.com/firebase/quickstart-unity/issues/116
-//                     */
-//                    .setCustomMetadata("Mitch's special meta data", "JK nothing special here")
-//                    .setCustomMetadata("location", "Iceland")
-//                    .build();
-//            //if the image size is valid then we can submit to database
-//            UploadTask uploadTask = null;
-//            uploadTask = storageReference.putBytes(mBytes, metadata);
-//            //uploadTask = storageReference.putBytes(mBytes); //without metadata
-//
-//
-//            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    //Now insert the download url into the firebase database
-//                    Uri firebaseURL = taskSnapshot.getDownloadUrl();
-////                    Toast.makeText(SettingsActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
-//                    Log.d(TAG, "onSuccess: firebase download url : " + firebaseURL.toString());
-//                    FirebaseDatabase.getInstance().getReference()
-//                            .child(getString(R.string.dbnode_users))
-//                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                            .child(getString(R.string.field_profile_image))
-//                            .setValue(firebaseURL.toString());
-//
-//                    hideDialog();
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    Toast.makeText(SettingsActivity.this, "could not upload photo", Toast.LENGTH_SHORT).show();
-//
-//                    hideDialog();
-//
-//                }
-//            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-//                    double currentProgress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-//                    if(currentProgress > (progress + 15)){
-//                        progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-//                        Log.d(TAG, "onProgress: Upload is " + progress + "% done");
-////                        Toast.makeText(SettingsActivity.this, progress + "%", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                }
-//            })
-//            ;
-//        }else{
-//            Toast.makeText(this, "Image is too Large", Toast.LENGTH_SHORT).show();
-//        }
-//
-//    }
+    private void executeUploadTask() {
+        showDialog();
+        FilePaths filePaths = new FilePaths();
+        //specify where the photo will be stored
+        final StorageReference storageReference = FirebaseStorage.getInstance().getReference()
+                .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + FirebaseAuth.getInstance().getCurrentUser().getUid()
+                        + "/profile_image"); //just replace the old image with the new one
+
+        if (mBytes.length / MB < MB_THRESHHOLD) {
+
+            // Create file metadata including the content type
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setContentType("image/jpg")
+                    .setContentLanguage("en") //see nodes below
+                    /*
+                    Make sure to use proper language code ("English" will cause a crash)
+                    I actually submitted this as a bug to the Firebase github page so it might be
+                    fixed by the time you watch this video. You can check it out at https://github.com/firebase/quickstart-unity/issues/116
+                     */
+                    .setCustomMetadata("Mitch's special meta data", "JK nothing special here")
+                    .setCustomMetadata("location", "Iceland")
+                    .build();
+            //if the image size is valid then we can submit to database
+            UploadTask uploadTask = null;
+            uploadTask = storageReference.putBytes(mBytes, metadata);
+            //uploadTask = storageReference.putBytes(mBytes); //without metadata
+
+
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    //Now insert the download url into the firebase database
+                    Uri firebaseURL = taskSnapshot.getDownloadUrl();
+//                    Toast.makeText(SettingsActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onSuccess: firebase download url : " + firebaseURL.toString());
+                    FirebaseDatabase.getInstance().getReference()
+                            .child(getString(R.string.dbnode_users))
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child(getString(R.string.field_profile_image))
+                            .setValue(firebaseURL.toString());
+
+                    hideDialog();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Toast.makeText(SettingsActivity.this, "could not upload photo", Toast.LENGTH_SHORT).show();
+
+                    hideDialog();
+
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double currentProgress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    if (currentProgress > (progress + 15)) {
+                        progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        Log.d(TAG, "onProgress: Upload is " + progress + "% done");
+//                        Toast.makeText(SettingsActivity.this, progress + "%", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            })
+            ;
+        } else {
+            Toast.makeText(this, "Image is too Large", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     private void getUserAccountData() {
         Log.d(TAG, "getUserAccountData: getting the user's account information");
@@ -388,14 +396,14 @@ public class SettingsActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 //this loop will return a single result
-//                for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
-//                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
-//                            + singleSnapshot.getValue(User.class).toString());
-//                    User user = singleSnapshot.getValue(User.class);
-//                    mName.setText(user.getName());
-//                    mPhone.setText(user.getPhone());
-//                    ImageLoader.getInstance().displayImage(user.getProfile_image(), mProfileImage);
-//                }
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
+                            + singleSnapshot.getValue(User.class).toString());
+                    User user = singleSnapshot.getValue(User.class);
+                    mName.setText(user.getName());
+                    mPhone.setText(user.getPhone());
+                    ImageLoader.getInstance().displayImage(user.getProfile_image(), mProfileImage);
+                }
             }
 
             @Override
@@ -416,8 +424,8 @@ public class SettingsActivity extends AppCompatActivity {
 
                 //this loop will return a single result
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-//                    Log.d(TAG, "onDataChange: (QUERY METHOD 2) found user: "
-//                            + singleSnapshot.getValue(User.class).toString());
+                    Log.d(TAG, "onDataChange: (QUERY METHOD 2) found user: "
+                            + singleSnapshot.getValue(User.class).toString());
                 }
             }
 
@@ -462,7 +470,6 @@ public class SettingsActivity extends AppCompatActivity {
             case REQUEST_CODE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(TAG, "onRequestPermissionsResult: User has allowed permission to access: " + permissions[0]);
-
                 }
                 break;
         }
