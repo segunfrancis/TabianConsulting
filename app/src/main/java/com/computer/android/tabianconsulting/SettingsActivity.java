@@ -56,6 +56,24 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
 
     private static final String TAG = "SettingsActivity";
 
+    @Override
+    public void getImagePath(Uri imagePath) {
+        if (!imagePath.toString().equals("")) {
+            mSelectedImageBitmap = null;
+            mSelectedImageUri = imagePath;
+            Log.d(TAG, "getImagePath: get the image uri: " + mSelectedImageUri);
+        }
+    }
+
+    @Override
+    public void getImageBitmap(Bitmap bitmap) {
+        if (!bitmap.toString().equals("")) {
+            mSelectedImageUri = null;
+            mSelectedImageBitmap = bitmap;
+            Log.d(TAG, "getImageImage: get the image uri: " + mSelectedImageBitmap);
+        }
+    }
+
     private static final String DOMAIN_NAME = "gmail.com";
     private static final int REQUEST_CODE = 1234;
     private static final double MB_THRESHHOLD = 5.0;
@@ -180,6 +198,7 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
         mProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(SettingsActivity.this, "Storage Permission: " + mStoragePermissions, Toast.LENGTH_SHORT).show();
                 if (mStoragePermissions) {
                     ChangePhotoDialog dialog = new ChangePhotoDialog();
                     dialog.show(getSupportFragmentManager(), getString(R.string.dialog_change_photo));
@@ -226,16 +245,6 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
         resize.execute(uri);
     }
 
-    @Override
-    public void getImagePath(Uri imagePath) {
-
-    }
-
-    @Override
-    public void getImageBitmap(Bitmap bitmap) {
-
-    }
-
     /**
      * 1) doinBackground takes an imageUri and returns the byte array after compression
      * 2) onPostExecute will print the % compression to the log once finished
@@ -280,7 +289,6 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 return byteBuffer.toByteArray();
             } else {
                 int size = mBitmap.getRowBytes() * mBitmap.getHeight();
@@ -292,14 +300,13 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
             }
         }
 
-
         @Override
         protected void onPostExecute(byte[] bytes) {
             super.onPostExecute(bytes);
             hideDialog();
             mBytes = bytes;
             //execute the upload
-//            executeUploadTask();
+            executeUploadTask();
         }
     }
 
@@ -314,7 +321,7 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
         showDialog();
         FilePaths filePaths = new FilePaths();
         //specify where the photo will be stored
-        final StorageReference storageReference = FirebaseStorage.getInstance().getReference()
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference()
                 .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + FirebaseAuth.getInstance().getCurrentUser().getUid()
                         + "/profile_image"); //just replace the old image with the new one
 
@@ -324,11 +331,12 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
             StorageMetadata metadata = new StorageMetadata.Builder()
                     .setContentType("image/jpg")
                     .setContentLanguage("en") //see nodes below
-                    /*
-                    Make sure to use proper language code ("English" will cause a crash)
-                    I actually submitted this as a bug to the Firebase github page so it might be
-                    fixed by the time you watch this video. You can check it out at https://github.com/firebase/quickstart-unity/issues/116
-                     */
+
+                    // Make sure to use proper language code("English" will cause a crash)
+                    // I actually submitted this as a bug to the Firebase github page so it might be
+                    // fixed by the time you watch this video.You can check it out at https:
+                    // github.com/firebase/quickstart-unity/issues/116
+
                     .setCustomMetadata("Mitch's special meta data", "JK nothing special here")
                     .setCustomMetadata("location", "Iceland")
                     .build();
@@ -337,13 +345,13 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
             uploadTask = storageReference.putBytes(mBytes, metadata);
             //uploadTask = storageReference.putBytes(mBytes); //without metadata
 
-
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
+                // TODO: Check if it works
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     //Now insert the download url into the firebase database
-                    Uri firebaseURL = taskSnapshot.getDownloadUrl();
-//                    Toast.makeText(SettingsActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
+                    Task<Uri> firebaseURL = taskSnapshot.getStorage().getDownloadUrl();
+                    Toast.makeText(SettingsActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "onSuccess: firebase download url : " + firebaseURL.toString());
                     FirebaseDatabase.getInstance().getReference()
                             .child(getString(R.string.dbnode_users))
@@ -356,10 +364,9 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    Toast.makeText(SettingsActivity.this, "could not upload photo", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
 
                     hideDialog();
-
                 }
             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -368,16 +375,13 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
                     if (currentProgress > (progress + 15)) {
                         progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                         Log.d(TAG, "onProgress: Upload is " + progress + "% done");
-//                        Toast.makeText(SettingsActivity.this, progress + "%", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SettingsActivity.this, progress + "%", Toast.LENGTH_SHORT).show();
                     }
-
                 }
-            })
-            ;
+            });
         } else {
             Toast.makeText(this, "Image is too Large", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private void getUserAccountData() {

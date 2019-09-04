@@ -32,7 +32,6 @@ public class ChangePhotoDialog extends DialogFragment {
 
     public interface OnPhotoReceivedListener {
         void getImagePath(Uri imagePath);
-
         void getImageBitmap(Bitmap bitmap);
     }
 

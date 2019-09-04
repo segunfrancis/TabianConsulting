@@ -39,7 +39,6 @@ public class UniversalImageLoader {
                 .diskCacheSize(100 * 1024 * 1024)
                 .build();
 
-
         return config;
     }
 }
