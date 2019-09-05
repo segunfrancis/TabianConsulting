@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.computer.android.tabianconsulting.models.ChatMessage;
 import com.computer.android.tabianconsulting.models.Chatroom;
 import com.computer.android.tabianconsulting.models.User;
 import com.computer.android.tabianconsulting.utility.ChatroomListAdapter;
