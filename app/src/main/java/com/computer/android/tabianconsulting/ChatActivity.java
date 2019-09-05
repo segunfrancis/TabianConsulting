@@ -38,7 +38,7 @@ public class ChatActivity extends AppCompatActivity {
 
     //widgets
     private ListView mListView;
-    private FloatingActionButton mFob;
+    private FloatingActionButton mFab;
 
     //vars
     private ArrayList<Chatroom> mChatrooms;
@@ -52,8 +52,8 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        mListView = (ListView) findViewById(R.id.listView);
-        mFob = (FloatingActionButton) findViewById(R.id.fob);
+        mListView = findViewById(R.id.listView);
+        mFab = findViewById(R.id.fab);
 
         init();
     }
@@ -61,7 +61,7 @@ public class ChatActivity extends AppCompatActivity {
     public void init() {
         mChatrooms = new ArrayList<>();
         getUserSecurityLevel();
-        mFob.setOnClickListener(new View.OnClickListener() {
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NewChatroomDialog dialog = new NewChatroomDialog();
@@ -204,7 +204,6 @@ public class ChatActivity extends AppCompatActivity {
                             if (users.size() > 0) {
                                 chatroom.setUsers(users);
                             }
-
                             mChatrooms.add(chatroom);
                         }
 

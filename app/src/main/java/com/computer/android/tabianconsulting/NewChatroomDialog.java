@@ -57,8 +57,6 @@ public class NewChatroomDialog extends DialogFragment {
 
                 if (!mChatroomName.getText().toString().equals("")) {
                     Log.d(TAG, "onClick: creating new chat room");
-
-
                     if (mUserSecurityLevel >= mSeekBar.getProgress()) {
 
                         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
@@ -73,7 +71,6 @@ public class NewChatroomDialog extends DialogFragment {
                         chatroom.setChatroom_name(mChatroomName.getText().toString());
                         chatroom.setCreator_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
                         chatroom.setChatroom_id(chatroomId);
-
 
                         //insert the new chatroom into the database
                         reference
@@ -97,14 +94,13 @@ public class NewChatroomDialog extends DialogFragment {
                                 .child(getString(R.string.field_chatroom_messages))
                                 .child(messageId)
                                 .setValue(message);
+                        /* Refreshing the list of messages */
                         ((ChatActivity) getActivity()).getChatrooms();
                         getDialog().dismiss();
                     } else {
                         Toast.makeText(getActivity(), "insuffient security level", Toast.LENGTH_SHORT).show();
                     }
-
                 }
-
             }
         });
 

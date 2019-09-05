@@ -198,8 +198,8 @@ public class SignedInActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.optionChat:
-//                intent = new Intent(SignedInActivity.this, ChatActivity.class);
-//                startActivity(intent);
+                intent = new Intent(SignedInActivity.this, ChatActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.optionAdmin:
                 if (mIsAdmin) {
