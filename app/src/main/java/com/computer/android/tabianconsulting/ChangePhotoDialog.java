@@ -63,7 +63,7 @@ public class ChangePhotoDialog extends DialogFragment {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: starting camera");
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                //startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
 
                 if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     // Create the File where the photo should go

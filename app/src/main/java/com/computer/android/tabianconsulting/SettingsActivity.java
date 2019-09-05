@@ -62,6 +62,8 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
             mSelectedImageBitmap = null;
             mSelectedImageUri = imagePath;
             Log.d(TAG, "getImagePath: get the image uri: " + mSelectedImageUri);
+
+            ImageLoader.getInstance().displayImage(mSelectedImageUri.toString(), mProfileImage);
         }
     }
 
@@ -71,6 +73,8 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
             mSelectedImageUri = null;
             mSelectedImageBitmap = bitmap;
             Log.d(TAG, "getImageImage: get the image uri: " + mSelectedImageBitmap);
+
+            mProfileImage.setImageBitmap(mSelectedImageBitmap);
         }
     }
 
@@ -198,7 +202,6 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
         mProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(SettingsActivity.this, "Storage Permission: " + mStoragePermissions, Toast.LENGTH_SHORT).show();
                 if (mStoragePermissions) {
                     ChangePhotoDialog dialog = new ChangePhotoDialog();
                     dialog.show(getSupportFragmentManager(), getString(R.string.dialog_change_photo));
@@ -321,7 +324,7 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
         showDialog();
         FilePaths filePaths = new FilePaths();
         //specify where the photo will be stored
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference()
+        final StorageReference storageReference = FirebaseStorage.getInstance().getReference()
                 .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + FirebaseAuth.getInstance().getCurrentUser().getUid()
                         + "/profile_image"); //just replace the old image with the new one
 
@@ -345,21 +348,32 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
             uploadTask = storageReference.putBytes(mBytes, metadata);
             //uploadTask = storageReference.putBytes(mBytes); //without metadata
 
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            // Getting the download URLget
+            storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
-                // TODO: Check if it works
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    //Now insert the download url into the firebase database
-                    Task<Uri> firebaseURL = taskSnapshot.getStorage().getDownloadUrl();
+                public void onSuccess(Uri uri) {
                     Toast.makeText(SettingsActivity.this, "Upload Success", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "onSuccess: firebase download url : " + firebaseURL.toString());
+                    Log.d(TAG, "onSuccess: firebase download url : " + uri.toString());
                     FirebaseDatabase.getInstance().getReference()
                             .child(getString(R.string.dbnode_users))
                             .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                             .child(getString(R.string.field_profile_image))
-                            .setValue(firebaseURL.toString());
-
+                            .setValue(uri.toString());
                     hideDialog();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(SettingsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    hideDialog();
+                }
+            });
+
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    //Now insert the download url into the firebase database
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -419,25 +433,25 @@ public class SettingsActivity extends AppCompatActivity implements ChangePhotoDi
         /*
             ---------- QUERY Method 2 ----------
          */
-        Query query2 = reference.child(getString(R.string.dbnode_users))
-                .orderByChild(getString(R.string.field_user_id))
-                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        query2.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                //this loop will return a single result
-                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    Log.d(TAG, "onDataChange: (QUERY METHOD 2) found user: "
-                            + singleSnapshot.getValue(User.class).toString());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+//        Query query2 = reference.child(getString(R.string.dbnode_users))
+//                .orderByChild(getString(R.string.field_user_id))
+//                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+//        query2.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                //this loop will return a single result
+//                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+//                    Log.d(TAG, "onDataChange: (QUERY METHOD 2) found user: "
+//                            + singleSnapshot.getValue(User.class).toString());
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
 
         mEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
     }
