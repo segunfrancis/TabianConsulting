@@ -62,13 +62,13 @@ public class ChatroomListAdapter extends ArrayAdapter<Chatroom> {
             convertView = mInflater.inflate(mLayoutResource, parent, false);
             holder = new ViewHolder();
 
-            holder.name = (TextView) convertView.findViewById(R.id.name);
-            holder.creatorName = (TextView) convertView.findViewById(R.id.creator_name);
-            holder.numberMessages = (TextView) convertView.findViewById(R.id.number_chatmessages);
-            holder.mProfileImage = (ImageView) convertView.findViewById(R.id.profile_image);
-            holder.mTrash = (ImageView) convertView.findViewById(R.id.icon_trash);
-            holder.leaveChat = (Button) convertView.findViewById(R.id.leave_chat);
-            holder.layoutContainer = (RelativeLayout) convertView.findViewById(R.id.layout_container);
+            holder.name = convertView.findViewById(R.id.name);
+            holder.creatorName = convertView.findViewById(R.id.creator_name);
+            holder.numberMessages = convertView.findViewById(R.id.number_chatmessages);
+            holder.mProfileImage = convertView.findViewById(R.id.profile_image);
+            holder.mTrash = convertView.findViewById(R.id.icon_trash);
+            holder.leaveChat = convertView.findViewById(R.id.leave_chat);
+            holder.layoutContainer = convertView.findViewById(R.id.layout_container);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }

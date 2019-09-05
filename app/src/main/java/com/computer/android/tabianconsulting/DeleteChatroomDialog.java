@@ -24,7 +24,6 @@ public class DeleteChatroomDialog extends DialogFragment {
 
     private String mChatroomId;
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,5 +67,4 @@ public class DeleteChatroomDialog extends DialogFragment {
         });
         return view;
     }
-
 }
