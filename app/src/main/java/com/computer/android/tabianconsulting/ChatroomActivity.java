@@ -226,7 +226,6 @@ public class ChatroomActivity extends AppCompatActivity {
         }
     }
 
-
     private void initMessagesList() {
         mAdapter = new ChatMessageListAdapter(ChatroomActivity.this,
                 R.layout.layout_chatmessage_listitem, mMessagesList);
