@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
@@ -24,8 +26,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class SignedInActivity extends AppCompatActivity {
@@ -56,9 +58,20 @@ public class SignedInActivity extends AppCompatActivity {
     }
 
     private void initFCM() {
-        String token = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "initFCM: token: " + token);
-        sendRegistrationToServer(token);
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnSuccessListener(this, new OnSuccessListener<InstanceIdResult>() {
+                    @Override
+                    public void onSuccess(InstanceIdResult instanceIdResult) {
+                        String token = instanceIdResult.getToken();
+                        Log.d(TAG, "onSuccess: FCM token: " + token);
+                        sendRegistrationTokenToServer(token);
+                    }
+                }).addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "onFailure: FCM token: " + e.getMessage());
+            }
+        });
     }
 
     private void getPendingIntent() {
@@ -109,8 +122,8 @@ public class SignedInActivity extends AppCompatActivity {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token) {
-        Log.d(TAG, "sendRegistrationToServer: sending token to server: " + token);
+    private void sendRegistrationTokenToServer(String token) {
+        Log.d(TAG, "sendRegistrationTokenToServer: sending token to server: " + token);
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         reference.child(getString(R.string.dbnode_users))
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
