@@ -4,6 +4,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -18,15 +24,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.computer.android.tabianconsulting.models.User;
+import com.computer.android.tabianconsulting.models.fcm.Data;
+import com.computer.android.tabianconsulting.models.fcm.FirebaseCloudMessage;
 import com.computer.android.tabianconsulting.utility.EmployeesAdapter;
-import com.google.android.gms.common.api.Response;
+import com.computer.android.tabianconsulting.utility.FCM;
+import com.computer.android.tabianconsulting.utility.VerticalSpacingDecorator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.okhttp.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,12 +66,12 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-        mDepartments = (TextView) findViewById(R.id.broadcast_departments);
-        mAddDepartment = (Button) findViewById(R.id.add_department);
-        mSendMessage = (Button) findViewById(R.id.btn_send_message);
-        mRecyclerView = (RecyclerView) findViewById(recyclerView);
-        mMessage = (EditText) findViewById(R.id.input_message);
-        mTitle = (EditText) findViewById(R.id.input_title);
+        mDepartments = findViewById(R.id.broadcast_departments);
+        mAddDepartment = findViewById(R.id.add_department);
+        mSendMessage = findViewById(R.id.btn_send_message);
+        mRecyclerView = findViewById(R.id.recyclerView);
+        mMessage = findViewById(R.id.input_message);
+        mTitle = findViewById(R.id.input_title);
 
         setupEmployeeList();
         init();
@@ -200,7 +208,6 @@ public class AdminActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     Log.d(TAG, "onResponse: Server Response: " + response.toString());
-
                 }
 
                 @Override
@@ -402,7 +409,6 @@ public class AdminActivity extends AppCompatActivity {
 
     /**
      * Return true if the @param is null
-     *
      * @param string
      * @return
      */

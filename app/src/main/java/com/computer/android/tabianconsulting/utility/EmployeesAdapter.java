@@ -31,9 +31,9 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.View
 
         public ViewHolder(View itemView) {
             super(itemView);
-            profileImage = (ImageView) itemView.findViewById(R.id.profile_image);
-            name = (TextView) itemView.findViewById(R.id.name);
-            department = (TextView) itemView.findViewById(R.id.department);
+            profileImage = itemView.findViewById(R.id.profile_image);
+            name = itemView.findViewById(R.id.name);
+            department = itemView.findViewById(R.id.department);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

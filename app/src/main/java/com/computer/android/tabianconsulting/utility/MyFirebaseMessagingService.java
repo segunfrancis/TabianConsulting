@@ -2,7 +2,14 @@ package com.computer.android.tabianconsulting.utility;
 
 import android.util.Log;
 
+import com.computer.android.tabianconsulting.AdminActivity;
+import com.computer.android.tabianconsulting.ChatActivity;
+import com.computer.android.tabianconsulting.ChatroomActivity;
+import com.computer.android.tabianconsulting.LoginActivity;
 import com.computer.android.tabianconsulting.R;
+import com.computer.android.tabianconsulting.RegisterActivity;
+import com.computer.android.tabianconsulting.SettingsActivity;
+import com.computer.android.tabianconsulting.SignedInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -27,20 +34,57 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        String notificationBody = "";
-        String notificationTitle = "";
-        String notificationData = "";
+//        String notificationBody = "";
+//        String notificationTitle = "";
+//        String notificationData = "";
+//
+//        try {
+//            notificationData = remoteMessage.getData().toString();
+//            notificationTitle = remoteMessage.getNotification().getTitle();
+//            notificationBody = remoteMessage.getNotification().getBody();
+//        } catch (NullPointerException e) {
+//            Log.e(TAG, "onMessageReceived: NullPointerException: " + e.getMessage());
+//        }
+//        Log.d(TAG, "onMessageReceived: data: " + notificationData);
+//        Log.d(TAG, "onMessageReceived: notification body: " + notificationBody);
+//        Log.d(TAG, "onMessageReceived: notification title: " + notificationTitle);
 
-        try {
-            notificationData = remoteMessage.getData().toString();
-            notificationTitle = remoteMessage.getNotification().getTitle();
-            notificationBody = remoteMessage.getNotification().getBody();
-        } catch (NullPointerException e) {
-            Log.e(TAG, "onMessageReceived: NullPointerException: " + e.getMessage());
+        // init image loader since that will be the first code that executes if they click a notification
+        initImageLoader();
+
+        String identifyDataType = remoteMessage.getData().get(getString(R.string.data_type));
+        // SITUATION: Application is in foreground then only send priority notifications such as an admin notification
+        if (isApplicationInForeground()) {
+            if (identifyDataType.equals(getString(R.string.data_type_admin_broadcast))) {
+                // build admin broadcast notification
+
+            }
         }
-        Log.d(TAG, "onMessageReceived: data: " + notificationData);
-        Log.d(TAG, "onMessageReceived: notification body: " + notificationBody);
-        Log.d(TAG, "onMessageReceived: notification title: " + notificationTitle);
+
+        // SITUATION: Application is in background or closed
+        else if (!isApplicationInForeground()) {
+            if (identifyDataType.equals(getString(R.string.data_type_admin_broadcast))) {
+                // build admin broadcast notification
+
+            } else if (identifyDataType.equals(getString(R.string.data_type_chat_message))) {
+                // build chat message notification
+
+            }
+        }
+    }
+
+    private boolean isApplicationInForeground() {
+        // check all the activities to see if any of them are running
+        boolean isActivityRunning = SignedInActivity.isActivityRunning
+                || ChatActivity.isActivityRunning || LoginActivity.isActivityRunning
+                || ChatroomActivity.isActivityRunning || AdminActivity.isActivityRunning
+                || RegisterActivity.isActivityRunning || SettingsActivity.isActivityRunning;
+        if (isActivityRunning) {
+            Log.d(TAG, "isApplicationInForeground: application is in foreground.");
+            return true;
+        }
+        Log.d(TAG, "isApplicationInForeground: application is in background or closed.");
+        return false;
     }
 
     private void sendRegistrationToServer(String token) {

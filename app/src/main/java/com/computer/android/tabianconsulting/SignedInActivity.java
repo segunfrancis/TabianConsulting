@@ -40,7 +40,7 @@ public class SignedInActivity extends AppCompatActivity {
 
     //vars
     public static boolean isActivityRunning;
-    private Boolean mIsAdmin = false;
+    private Boolean mIsAdmin = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,8 +216,8 @@ public class SignedInActivity extends AppCompatActivity {
                 return true;
             case R.id.optionAdmin:
                 if (mIsAdmin) {
-//                    intent = new Intent(SignedInActivity.this, AdminActivity.class);
-//                    startActivity(intent);
+                    intent = new Intent(SignedInActivity.this, AdminActivity.class);
+                    startActivity(intent);
                 } else {
                     Toast.makeText(this, "You're not an Admin", Toast.LENGTH_SHORT).show();
                 }
