@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.computer.android.tabianconsulting.models.Chatroom;
+import com.computer.android.tabianconsulting.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,7 +42,7 @@ public class SignedInActivity extends AppCompatActivity {
 
     //vars
     public static boolean isActivityRunning;
-    private Boolean mIsAdmin = true;
+    private Boolean mIsAdmin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,11 +84,11 @@ public class SignedInActivity extends AppCompatActivity {
             Log.d(TAG, "getPendingIntent: pending intent detected.");
 
             //get the chatroom
-//            Chatroom chatroom = intent.getParcelableExtra(getString(R.string.intent_chatroom));
-//            //navigate to the chatoom
-//            Intent chatroomIntent = new Intent(SignedInActivity.this, ChatroomActivity.class);
-//            chatroomIntent.putExtra(getString(R.string.intent_chatroom), chatroom);
-//            startActivity(chatroomIntent);
+            Chatroom chatroom = intent.getParcelableExtra(getString(R.string.intent_chatroom));
+            //navigate to the chatoom
+            Intent chatroomIntent = new Intent(SignedInActivity.this, ChatroomActivity.class);
+            chatroomIntent.putExtra(getString(R.string.intent_chatroom), chatroom);
+            startActivity(chatroomIntent);
         }
     }
 
@@ -100,11 +102,11 @@ public class SignedInActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange: datasnapshot: " + dataSnapshot);
                 DataSnapshot singleSnapshot = dataSnapshot.getChildren().iterator().next();
-//                int securityLevel = Integer.parseInt(singleSnapshot.getValue(User.class).getSecurity_level());
-//                if( securityLevel == 10){
-//                    Log.d(TAG, "onDataChange: user is an admin.");
-//                    mIsAdmin = true;
-//                }
+                int securityLevel = Integer.parseInt(singleSnapshot.getValue(User.class).getSecurity_level());
+                if( securityLevel == 10){
+                    Log.d(TAG, "onDataChange: user is an admin.");
+                    mIsAdmin = true;
+                }
             }
 
             @Override
